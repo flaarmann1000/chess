@@ -26,7 +26,8 @@ export interface GameState {
   updatedAt: number;
 }
 
-const GAME_KEY = "chess:game:main";
+// Edge Config keys allow only [A-Za-z0-9_-] (no colons), so keep this simple.
+const GAME_KEY = "chess_game_main";
 
 const START_FEN =
   "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
