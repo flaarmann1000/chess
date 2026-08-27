@@ -7,6 +7,7 @@
   --line: #eceae5;
   --line-strong: #dedbd4;
   --accent: #1b1b19;
+  --accent-fg: #ffffff;
 
   /* Board — quiet, warm greige */
   --sq-light: #f2f1ec;
@@ -16,7 +17,62 @@
   --hint: rgba(30, 30, 25, 0.16);
   --check: rgba(200, 90, 80, 0.28);
 
+  --toast-bg: #1b1b19;
+  --toast-fg: #ffffff;
+
   color-scheme: light;
+}
+
+/* Dark palette. Applied when the user picks dark, or when the system prefers
+   dark and no explicit light choice has been made. */
+:root[data-theme="dark"] {
+  --bg: #14140f;
+  --surface: #1c1c17;
+  --text: #edeae2;
+  --muted: #8f8d83;
+  --faint: #605e55;
+  --line: #262620;
+  --line-strong: #38372f;
+  --accent: #edeae2;
+  --accent-fg: #16160f;
+
+  --sq-light: #b7b4a6;
+  --sq-dark: #83806e;
+  --sel: rgba(232, 226, 150, 0.20);
+  --last: rgba(232, 226, 150, 0.15);
+  --hint: rgba(15, 15, 10, 0.32);
+  --check: rgba(214, 96, 84, 0.42);
+
+  --toast-bg: #edeae2;
+  --toast-fg: #16160f;
+
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #14140f;
+    --surface: #1c1c17;
+    --text: #edeae2;
+    --muted: #8f8d83;
+    --faint: #605e55;
+    --line: #262620;
+    --line-strong: #38372f;
+    --accent: #edeae2;
+    --accent-fg: #16160f;
+
+    --sq-light: #b7b4a6;
+    --sq-dark: #83806e;
+    --sel: rgba(232, 226, 150, 0.20);
+    --last: rgba(232, 226, 150, 0.15);
+    --hint: rgba(15, 15, 10, 0.32);
+    --check: rgba(214, 96, 84, 0.42);
+
+    --toast-bg: #edeae2;
+    --toast-fg: #16160f;
+
+    color-scheme: dark;
+  }
 }
 
 * {
@@ -35,6 +91,7 @@ body {
   min-height: 100dvh;
   -webkit-font-smoothing: antialiased;
   letter-spacing: 0.01em;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 button {
@@ -104,7 +161,7 @@ button {
   border: 1px solid var(--accent);
   border-radius: 10px;
   background: var(--accent);
-  color: #fff;
+  color: var(--accent-fg);
   transition: opacity 0.15s;
 }
 .btn:hover {
@@ -497,8 +554,8 @@ button {
   left: 50%;
   bottom: 24px;
   transform: translateX(-50%);
-  background: var(--text);
-  color: #fff;
+  background: var(--toast-bg);
+  color: var(--toast-fg);
   padding: 10px 16px;
   border-radius: 8px;
   font-size: 13px;

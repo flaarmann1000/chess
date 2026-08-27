@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Board from "@/components/Board";
+import ThemeToggle from "@/components/ThemeToggle";
 
 type Color = "white" | "black";
 
@@ -188,6 +189,7 @@ export default function GamePage() {
           <span>Chess</span>
         </div>
         <div className="topbar-actions">
+          <ThemeToggle />
           <button className="chip-btn" onClick={reset} disabled={busy}>
             New game
           </button>

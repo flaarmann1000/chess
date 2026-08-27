@@ -11,8 +11,14 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: "#fbfbfa",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#fbfbfa" },
+    { media: "(prefers-color-scheme: dark)", color: "#14140f" },
+  ],
 };
+
+// Runs before paint to apply the saved theme, avoiding a flash of the wrong one.
+const noFlashTheme = `(function(){try{var t=localStorage.getItem('chess-theme');if(t==='dark'||t==='light'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();`;
 
 export default function RootLayout({
   children,
@@ -20,7 +26,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: noFlashTheme }} />
+      </head>
       <body>{children}</body>
     </html>
   );
