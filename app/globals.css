@@ -8,6 +8,8 @@
   --line-strong: #dedbd4;
   --accent: #1b1b19;
   --accent-fg: #ffffff;
+  --good: #2f9e44;
+  --warn: #c0564d;
 
   /* Board — quiet, warm greige */
   --sq-light: #f2f1ec;
@@ -35,6 +37,8 @@
   --line-strong: #38372f;
   --accent: #edeae2;
   --accent-fg: #16160f;
+  --good: #5bbf6a;
+  --warn: #e0796f;
 
   --sq-light: #b7b4a6;
   --sq-dark: #83806e;
@@ -253,7 +257,11 @@ button {
   display: none;
 }
 .status.your-turn {
-  color: var(--text);
+  color: var(--good);
+  font-weight: 600;
+}
+.status.warn {
+  color: var(--warn);
 }
 .status.over {
   color: var(--text);
@@ -393,29 +401,6 @@ button {
   border: 4px solid var(--hint);
   border-radius: 50%;
 }
-.coord {
-  position: absolute;
-  font-size: 9px;
-  font-weight: 600;
-  opacity: 0.5;
-  z-index: 3;
-  pointer-events: none;
-}
-.coord.file {
-  right: 3px;
-  bottom: 1px;
-}
-.coord.rank {
-  left: 3px;
-  top: 1px;
-}
-.coord.on-light {
-  color: var(--sq-dark);
-}
-.coord.on-dark {
-  color: var(--sq-light);
-}
-
 /* ---------- Side panel ---------- */
 .panel {
   display: flex;
@@ -433,6 +418,36 @@ button {
   letter-spacing: 0.1em;
   color: var(--faint);
   font-weight: 600;
+}
+.panel-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 0;
+  background: none;
+  border: none;
+  color: inherit;
+  text-align: left;
+}
+.panel-toggle .caret {
+  color: var(--faint);
+  font-size: 15px;
+  line-height: 1;
+  transition: transform 0.15s ease;
+  transform: rotate(0deg);
+}
+.panel-toggle .caret.open {
+  transform: rotate(90deg);
+}
+.panel-toggle:hover h3 {
+  color: var(--muted);
+}
+.panel-count {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--faint);
+  font-variant-numeric: tabular-nums;
 }
 .moves {
   display: grid;

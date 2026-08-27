@@ -119,13 +119,12 @@ export default function Board({
   return (
     <div className="board-frame">
       <div className="board" role="grid" aria-label="Chess board">
-        {ranks.map((rank, rIdx) =>
-          files.map((file, fIdx) => {
+        {ranks.map((rank) =>
+          files.map((file) => {
             const square = `${file}${rank}`;
             const isLight = (FILES.indexOf(file) + rank) % 2 === 1;
             const piece = pieceAt(square);
             const isSel = selected === square;
-            const target = legalTargets.get(square);
             const isTarget = legalTargets.has(square);
             const isLast =
               lastMove && (lastMove.from === square || lastMove.to === square);
@@ -144,10 +143,6 @@ export default function Board({
               .filter(Boolean)
               .join(" ");
 
-            // Coordinate labels on the edge squares.
-            const showFile = rIdx === ranks.length - 1;
-            const showRank = fIdx === 0;
-
             return (
               <div
                 key={square}
@@ -161,16 +156,6 @@ export default function Board({
                 {piece && (
                   <span className={`piece ${piece.color}`}>
                     {GLYPH[piece.type]}
-                  </span>
-                )}
-                {showRank && (
-                  <span className={`coord rank ${isLight ? "on-light" : "on-dark"}`}>
-                    {rank}
-                  </span>
-                )}
-                {showFile && (
-                  <span className={`coord file ${isLight ? "on-light" : "on-dark"}`}>
-                    {file}
                   </span>
                 )}
               </div>

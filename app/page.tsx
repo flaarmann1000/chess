@@ -7,12 +7,17 @@ import ThemeToggle from "@/components/ThemeToggle";
 
 type Color = "white" | "black";
 
+interface PlayerInfo {
+  id: string;
+  name: string;
+}
+
 interface GameState {
   fen: string;
   turn: "w" | "b";
   status: "waiting" | "active" | "check" | "checkmate" | "stalemate" | "draw";
   winner: Color | null;
-  players: { white: string | null; black: string | null };
+  players: { white: PlayerInfo | null; black: PlayerInfo | null };
   history: string[];
   lastMove: { from: string; to: string } | null;
   updatedAt: number;
@@ -56,6 +61,7 @@ export default function GamePage() {
   const [data, setData] = useState<ApiResponse | null>(null);
   const [toast, setToast] = useState("");
   const [busy, setBusy] = useState(false);
+  const [movesOpen, setMovesOpen] = useState(false);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const showToast = useCallback((msg: string) => {
@@ -165,8 +171,13 @@ export default function GamePage() {
   } else {
     const mover = game.turn === "w" ? "White" : "Black";
     if (isYourTurn) {
-      statusText = game.status === "check" ? "Your move — you're in check!" : "Your move";
-      statusClass += " your-turn";
+      if (game.status === "check") {
+        statusText = "Your move — you're in check!";
+        statusClass += " your-turn warn";
+      } else {
+        statusText = "Your move";
+        statusClass += " your-turn";
+      }
     } else {
       statusText = `${mover} to move${game.status === "check" ? " — check" : ""}`;
     }
@@ -174,11 +185,14 @@ export default function GamePage() {
 
   const showJoin = you === null;
 
-  function seatLabel(color: Color) {
-    const seated = Boolean(game.players[color]);
+  // Name/meta shown in a player's row.
+  function seatDisplay(color: Color) {
+    const seat = game.players[color];
     const isYou = you === color;
-    if (!seated) return "open";
-    return isYou ? "you" : "player";
+    if (!seat) {
+      return { name: color === "white" ? "White" : "Black", meta: "open" };
+    }
+    return { name: seat.name, meta: isYou ? "you" : "" };
   }
 
   return (
@@ -202,16 +216,23 @@ export default function GamePage() {
       <div className="layout">
         <div className="board-col">
           {/* Opponent strip (top) */}
-          <PlayerStrip
-            color={orientation === "white" ? "black" : "white"}
-            label={seatLabel(orientation === "white" ? "black" : "white")}
-            active={
-              !gameOver &&
-              game.turn === (orientation === "white" ? "b" : "w") &&
-              game.status !== "waiting"
-            }
-            captured={orientation === "white" ? capturedBlack : capturedWhite}
-          />
+          {(() => {
+            const oppColor = orientation === "white" ? "black" : "white";
+            const d = seatDisplay(oppColor);
+            return (
+              <PlayerStrip
+                color={oppColor}
+                name={d.name}
+                meta={d.meta}
+                active={
+                  !gameOver &&
+                  game.turn === (orientation === "white" ? "b" : "w") &&
+                  game.status !== "waiting"
+                }
+                captured={orientation === "white" ? capturedBlack : capturedWhite}
+              />
+            );
+          })()}
 
           <div className={statusClass}>
             <span className="dot" />
@@ -229,16 +250,22 @@ export default function GamePage() {
           />
 
           {/* Your strip (bottom) */}
-          <PlayerStrip
-            color={orientation}
-            label={seatLabel(orientation)}
-            active={
-              !gameOver &&
-              game.turn === (orientation === "white" ? "w" : "b") &&
-              game.status !== "waiting"
-            }
-            captured={orientation === "white" ? capturedWhite : capturedBlack}
-          />
+          {(() => {
+            const d = seatDisplay(orientation);
+            return (
+              <PlayerStrip
+                color={orientation}
+                name={d.name}
+                meta={d.meta}
+                active={
+                  !gameOver &&
+                  game.turn === (orientation === "white" ? "w" : "b") &&
+                  game.status !== "waiting"
+                }
+                captured={orientation === "white" ? capturedWhite : capturedBlack}
+              />
+            );
+          })()}
         </div>
 
         <div className="board-col">
@@ -276,8 +303,18 @@ export default function GamePage() {
           )}
 
           <div className="panel">
-            <h3>Moves</h3>
-            <MoveList history={game.history} />
+            <button
+              className="panel-toggle"
+              onClick={() => setMovesOpen((o) => !o)}
+              aria-expanded={movesOpen}
+            >
+              <span className={`caret ${movesOpen ? "open" : ""}`}>›</span>
+              <h3>Moves</h3>
+              <span className="panel-count">
+                {game.history.length > 0 ? game.history.length : ""}
+              </span>
+            </button>
+            {movesOpen && <MoveList history={game.history} />}
           </div>
         </div>
       </div>
@@ -289,25 +326,27 @@ export default function GamePage() {
 
 function PlayerStrip({
   color,
-  label,
+  name,
+  meta,
   active,
   captured,
 }: {
   color: Color;
-  label: string;
+  name: string;
+  meta: string;
   active: boolean;
   captured: string[];
 }) {
   return (
     <div className={`pstrip ${active ? "active" : ""}`}>
       <span className={`swatch ${color}`} />
-      <span className="name">{color === "white" ? "White" : "Black"}</span>
+      <span className="name">{name}</span>
       <span className="captured">
         {captured.map((p, i) => (
           <span key={i}>{GLYPH[p]}</span>
         ))}
       </span>
-      <span className="meta">{label}</span>
+      {meta && <span className="meta">{meta}</span>}
     </div>
   );
 }

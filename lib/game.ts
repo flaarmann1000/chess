@@ -14,13 +14,17 @@ export type GameStatus =
   | "stalemate"
   | "draw";
 
+export interface PlayerInfo {
+  id: string; // clientId that claimed the seat
+  name: string; // display name chosen at login
+}
+
 export interface GameState {
   fen: string;
   turn: "w" | "b";
   status: GameStatus;
   winner: Color | null;
-  // clientId that has claimed each seat.
-  players: { white: string | null; black: string | null };
+  players: { white: PlayerInfo | null; black: PlayerInfo | null };
   history: string[]; // SAN moves, in order
   lastMove: { from: string; to: string } | null;
   updatedAt: number;
@@ -78,31 +82,32 @@ function bothSeated(g: GameState): boolean {
 // Claim a color for a client. Returns updated game or an error message.
 export async function claimSeat(
   clientId: string,
-  color: Color
+  color: Color,
+  name: string
 ): Promise<{ game: GameState } | { error: string }> {
   const g = await loadGame();
 
   // Already seated somewhere?
-  if (g.players.white === clientId && color !== "white") {
+  if (g.players.white?.id === clientId && color !== "white") {
     return { error: "You already joined as White." };
   }
-  if (g.players.black === clientId && color !== "black") {
+  if (g.players.black?.id === clientId && color !== "black") {
     return { error: "You already joined as Black." };
   }
 
   const seat = g.players[color];
-  if (seat && seat !== clientId) {
+  if (seat && seat.id !== clientId) {
     return { error: `${color === "white" ? "White" : "Black"} is already taken.` };
   }
 
-  g.players[color] = clientId;
+  g.players[color] = { id: clientId, name };
   if (g.status === "waiting" && bothSeated(g)) g.status = "active";
   return { game: await saveGame(g) };
 }
 
 export function seatOf(g: GameState, clientId: string): Color | null {
-  if (g.players.white === clientId) return "white";
-  if (g.players.black === clientId) return "black";
+  if (g.players.white?.id === clientId) return "white";
+  if (g.players.black?.id === clientId) return "black";
   return null;
 }
 

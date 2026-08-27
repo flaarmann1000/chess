@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { CLIENT_COOKIE } from "@/lib/auth";
+import { CLIENT_COOKIE, NAME_COOKIE, sanitizeName } from "@/lib/auth";
 import {
   applyMove,
   claimSeat,
@@ -57,7 +57,10 @@ export async function POST(req: NextRequest) {
       if (color !== "white" && color !== "black") {
         return NextResponse.json({ error: "Invalid color." }, { status: 400 });
       }
-      const result = await claimSeat(clientId, color);
+      const cookieName = sanitizeName(req.cookies.get(NAME_COOKIE)?.value);
+      const name =
+        cookieName || (color === "white" ? "White" : "Black");
+      const result = await claimSeat(clientId, color, name);
       if ("error" in result) {
         return NextResponse.json({ error: result.error }, { status: 409 });
       }

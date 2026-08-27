@@ -9,7 +9,7 @@ new devices, and Vercel's stateless serverless functions.
 
 - Full chess rules (castling, en passant, promotion, check/checkmate/stalemate/draw) via `chess.js`, validated **server-side** so no illegal moves are possible.
 - Two-device online play with light polling for live sync.
-- Clean dark UI: legal-move hints, last-move + check highlights, captured-piece trays, move list, promotion picker.
+- Clean minimal UI with optional dark mode: player names, legal-move hints, last-move + check highlights, captured-piece trays, a color-coded turn indicator, a collapsible move list, and a promotion picker.
 - Fully responsive — board scales to the viewport, panels stack on mobile, touch-friendly tap targets.
 - Single shared password gate (hardcoded in env), signed httpOnly auth cookie.
 - Pluggable persistence — **Vercel Edge Config**, **Vercel KV / Upstash Redis**, or an automatic in-memory fallback for local dev. The backend is auto-detected from env vars.
