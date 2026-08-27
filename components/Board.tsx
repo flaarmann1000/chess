@@ -5,13 +5,17 @@ import { Chess, type Square } from "chess.js";
 
 type Color = "w" | "b";
 
+// U+FE0E (text variation selector) forces monochrome text rendering so mobile
+// OS fonts don't promote the pawn glyph (U+265F) to a color emoji, which would
+// ignore our CSS color and make white pawns appear black.
+const VS = "︎";
 const GLYPH: Record<string, string> = {
-  k: "♚",
-  q: "♛",
-  r: "♜",
-  b: "♝",
-  n: "♞",
-  p: "♟",
+  k: "♚" + VS,
+  q: "♛" + VS,
+  r: "♜" + VS,
+  b: "♝" + VS,
+  n: "♞" + VS,
+  p: "♟" + VS,
 };
 
 const FILES = ["a", "b", "c", "d", "e", "f", "g", "h"];

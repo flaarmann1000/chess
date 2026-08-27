@@ -305,6 +305,9 @@ button {
   line-height: 1;
   position: relative;
   z-index: 2;
+  /* Keep chess glyphs monochrome so mobile fonts don't render a color emoji
+     (especially the pawn) that ignores `color`. Pairs with the U+FE0E suffix. */
+  font-variant-emoji: text;
 }
 .piece.w {
   color: #ffffff;

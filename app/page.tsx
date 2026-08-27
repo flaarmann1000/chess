@@ -22,8 +22,10 @@ interface ApiResponse {
   you: Color | null;
 }
 
+// U+FE0E forces monochrome text rendering (see components/Board.tsx).
+const VS = "︎";
 const GLYPH: Record<string, string> = {
-  k: "♚", q: "♛", r: "♜", b: "♝", n: "♞", p: "♟",
+  k: "♚" + VS, q: "♛" + VS, r: "♜" + VS, b: "♝" + VS, n: "♞" + VS, p: "♟" + VS,
 };
 
 // Derive captured pieces by diffing the board against the full starting set.
@@ -249,7 +251,7 @@ export default function GamePage() {
                     onClick={() => claim("white")}
                     disabled={busy || Boolean(game.players.white)}
                   >
-                    <span className="big piece w">♚</span>
+                    <span className="big piece w">{GLYPH.k}</span>
                     <span className="lbl">White</span>
                     <span className="taken">
                       {game.players.white ? "taken" : "available"}
@@ -260,7 +262,7 @@ export default function GamePage() {
                     onClick={() => claim("black")}
                     disabled={busy || Boolean(game.players.black)}
                   >
-                    <span className="big piece b">♚</span>
+                    <span className="big piece b">{GLYPH.k}</span>
                     <span className="lbl">Black</span>
                     <span className="taken">
                       {game.players.black ? "taken" : "available"}
