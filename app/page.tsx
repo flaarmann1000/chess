@@ -70,6 +70,18 @@ export default function GamePage() {
     toastTimer.current = setTimeout(() => setToast(""), 2600);
   }, []);
 
+  // Apply a state update, but never move backward. The store (Edge Config) is
+  // eventually consistent, so polling can briefly return a stale/older version
+  // after a move or reset. Each state carries a strictly-increasing updatedAt;
+  // we ignore anything older than what we already show so the board can't
+  // regress (e.g. flip back to a finished game right after "New game").
+  const applyState = useCallback((incoming: ApiResponse) => {
+    setData((prev) => {
+      if (prev && incoming.game.updatedAt < prev.game.updatedAt) return prev;
+      return incoming;
+    });
+  }, []);
+
   const fetchGame = useCallback(async () => {
     try {
       const res = await fetch("/api/game", { cache: "no-store" });
@@ -77,11 +89,11 @@ export default function GamePage() {
         router.replace("/login");
         return;
       }
-      if (res.ok) setData(await res.json());
+      if (res.ok) applyState(await res.json());
     } catch {
       /* transient network error — next poll retries */
     }
-  }, [router]);
+  }, [router, applyState]);
 
   // Poll for updates.
   useEffect(() => {
@@ -103,7 +115,7 @@ export default function GamePage() {
         showToast(json.error || "Something went wrong.");
         return null;
       }
-      setData(json);
+      applyState(json);
       return json;
     } catch {
       showToast("Network error.");

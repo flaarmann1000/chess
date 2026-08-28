@@ -69,7 +69,12 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 > **Edge Config notes:** it's read-optimized (ideal for the polling reads) and writes are
 > rate-limited, but a turn-based game only writes on a move / seat claim / reset, so the
 > write volume is tiny. Writes propagate globally within a second or two, so an opponent
-> sees your move on their next poll.
+> sees your move on their next poll. Because Edge Config is *eventually consistent* (a
+> read just after a write can briefly return the previous version), each game state carries
+> a strictly-increasing `updatedAt`, and the client ignores any polled state older than the
+> one it already shows — so the board never regresses (e.g. flips back to a finished game
+> right after "New game"). If you want snappier, strongly-consistent sync, switch to
+> Vercel KV / Upstash Redis by setting the `KV_*` env vars instead; no code changes needed.
 
 ## How it works
 
